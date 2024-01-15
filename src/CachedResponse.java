@@ -92,7 +92,7 @@ public class CachedResponse {
             }
 
             // Default expiry time of 10 seconds
-            return currentTimeMillis + 10000L;
+            return currentTimeMillis + 1000000L;
         }
     }
 }

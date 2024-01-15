@@ -98,4 +98,4 @@ public class RequestHandler extends Thread{
     }
 
 }
-// 1.
+// 项目难点： 1. 代理服务器的实现 2. 缓存的实现 3. 黑名单的实现  4. 多线程的实现 5. 代理服务器的安全性

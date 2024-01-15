@@ -99,7 +99,7 @@ public class HTTPResponse {
 
         return responseBuilder.toString();
     }
-    int getStatusCode(){
+    public int getStatusCode(){
         return statusCode;
     }
 }

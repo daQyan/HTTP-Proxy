@@ -56,10 +56,10 @@ public class CachedGetHandler {
 
             // Create a CachedResponse object
             CachedResponse responseToCache = new CachedResponse(httpResponse, expiryTime);
-
+            // TODO ? response start line as key ?
             // Store the CachedResponse in the cache
             String requestKeyToCache = httpResponse.getStartLine();
-            cache.put(requestKeyToCache, responseToCache);
+            cache.put(requestKey, responseToCache);
             logger.log(Level.INFO, "Response starting with \"{0}\" has been cached, the size of cache is now {1}",
                     new Object[]{requestKey, cache.size()});
         }

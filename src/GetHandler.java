@@ -25,6 +25,7 @@ public class GetHandler {
         String response;
         try {
             response = fetchResponseFromServer();
+            System.out.println("GET response: " + response);
         } catch (IOException e) {
             throw new IOException("Error in fetchResponseFromServer: " + e.getMessage(), e);
         }

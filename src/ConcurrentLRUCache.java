@@ -1,3 +1,5 @@
+import org.w3c.dom.Node;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,7 +13,8 @@ public class ConcurrentLRUCache implements ResponseCache{
     private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
     private final Lock readLock = rwLock.readLock();
     private final Lock writeLock = rwLock.writeLock();
-    public static class Node{
+
+    private static class Node {
 
         public String startLine;
         public CachedResponse response;
@@ -30,29 +33,33 @@ public class ConcurrentLRUCache implements ResponseCache{
     }
     @Override
     public CachedResponse get(String key) {
+        Node node;
         readLock.lock();
         try {
-            Node node = cacheMap.get(key);
-            if (node != null && node.response.isExpired()) {
-                writeLock.lock();
-                try {
-                    if (node.response.isExpired()) {
-                        removeCache(key);
-                        cacheMap.remove(key);
-                        return null;
-                    }
-                } finally {
-                    writeLock.unlock();
-                }
+            node = cacheMap.get(key);
+            if (node == null || !node.response.isExpired()) {
+                return node != null ? node.response : null;
             }
-            if (node != null) {
-                moveToHead(node);
-            }
-            return node != null ? node.response : null;
         } finally {
             readLock.unlock();
         }
+
+        writeLock.lock();
+        try {
+            // 再次检查过期条件，因为状态可能已经改变
+            if (node.response.isExpired()) {
+                removeCache(key);
+                cacheMap.remove(key);
+                return null;
+            }
+            // 如果项仍然有效（可能在等待写锁期间被更新）
+            moveToHead(node);
+            return node.response;
+        } finally {
+            writeLock.unlock();
+        }
     }
+
 
     @Override
     public void put(String key, CachedResponse response) {
